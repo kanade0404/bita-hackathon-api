@@ -7,6 +7,7 @@ const _ = require('lodash');
 const validator = require('validator');
 const mailChecker = require('mailchecker');
 const User = require('../models/User');
+const Store = require('../models/Store');
 const userAdapter = require('../adapter/user');
 
 const randomBytesAsync = promisify(crypto.randomBytes);
@@ -64,15 +65,19 @@ exports.getUserDetail = (req, res) => {
   });
 };
 
-exports.createStore = (req, res) => {
-  res.json({
-    data: {
-      id: '1',
-      name: 'restaurant',
-      lat: 36.204823999999995,
-      lon: 138.252924
+exports.createStore = async (req, res) => {
+  const { name, lat, lon } = req.body;
+  try {
+    const existStore = await Store.findOne({ name, lat, lon });
+    if (existStore) {
+      res.json({ data: existStore });
+    } else {
+      const store = await Store.create({ name, lat, lon });
+      res.json({ data: store });
     }
-  });
+  } catch (error) {
+    res.status(400).json(error);
+  }
 };
 exports.getStore = (req, res) => {
   res.json({
