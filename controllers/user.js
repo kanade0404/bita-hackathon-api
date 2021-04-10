@@ -9,6 +9,7 @@ const mailChecker = require('mailchecker');
 const User = require('../models/User');
 const Store = require('../models/Store');
 const userAdapter = require('../adapter/user');
+const storeAdapter = require('../adapter/store');
 
 const randomBytesAsync = promisify(crypto.randomBytes);
 
@@ -66,33 +67,23 @@ exports.getUserDetail = (req, res) => {
 };
 
 exports.createStore = async (req, res) => {
-  const { name, lat, lon } = req.body;
+  const { name, latitude, longitude } = req.body;
   try {
-    const existStore = await Store.findOne({ name, lat, lon });
+    const existStore = await Store.findOne({ name, latitude, longitude });
     if (existStore) {
       res.json({ data: existStore });
     } else {
-      const store = await Store.create({ name, lat, lon });
+      const store = await Store.create({ name, latitude, longitude });
       res.json({ data: store });
     }
   } catch (error) {
     res.status(400).json(error);
   }
 };
-exports.getStore = (req, res) => {
+exports.getStore = async (req, res) => {
+  const stores = await Store.find();
   res.json({
-    data: [{
-      id: '1',
-      name: 'restaurant',
-      lat: 36.204823999999995,
-      lon: 138.252924
-    },
-    {
-      id: '2',
-      name: 'caffe',
-      lat: 36.204823999999995,
-      lon: 138.252924
-    }]
+    data: stores.map((store) => storeAdapter.convertStore(store))
   });
 };
 
@@ -113,8 +104,8 @@ exports.createReview = (req, res) => {
       store: {
         id: '1',
         name: 'restaurant',
-        lat: 36.204823999999995,
-        lon: 138.252924
+        latitude: 36.204823999999995,
+        longitude: 138.252924
       },
       user: {
         id: '12345', email: 'user1@example.com', name: 'John Doe', picture: 'test.img'
@@ -132,8 +123,8 @@ exports.getReview = (req, res) => {
         store: {
           id: '1',
           name: 'restaurant',
-          lat: 36.204823999999995,
-          lon: 138.252924
+          latitude: 36.204823999999995,
+          longitude: 138.252924
         },
         user: {
           id: '12345', email: 'user1@example.com', name: 'John Doe', picture: 'test.img'
@@ -145,8 +136,8 @@ exports.getReview = (req, res) => {
         store: {
           id: '1',
           name: 'restaurant',
-          lat: 36.204823999999995,
-          lon: 138.252924
+          latitude: 36.204823999999995,
+          longitude: 138.252924
         },
         user: {
           id: '23456', email: 'user2@example.com', name: 'John Smith', picture: 'te2t.img'

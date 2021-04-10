@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const storeSchema = new mongoose.Schema({
   name: String,
   address: String,
-  lat: Number,
-  lon: Number
+  latitude: Number,
+  longitude: Number
 }, { timestamps: true });
 
 const Store = mongoose.model('Store', storeSchema);
