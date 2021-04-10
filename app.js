@@ -142,14 +142,7 @@ app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userControl
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'], accessType: 'offline', prompt: 'consent' }));
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), async (req, res) => {
   const loggedInUser = await User.findById(req.session.passport.user);
-  res.json({
-    data: {
-      id: loggedInUser._id,
-      email: loggedInUser.email,
-      name: loggedInUser.profile.name,
-      picture: loggedInUser.profile.picture,
-    }
-  });
+  res.redirect(`${process.env.CLIENT_URL}?userId=${loggedInUser._id}&token=${loggedInUser.tokens[0].accessToken}`);
 });
 
 /**
