@@ -20,7 +20,7 @@ const getRestaurantInfo = async (nearByInfo) => {
 };
 
 exports.getNearbyRestaurant = async (req, res) => {
-  const { lat, lon } = req.body;
+  const { lat, lon } = req.query;
   try {
     const axiosResponse = await axios.post(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lon}&radius=${SEARCH_RADIUS}&type=restaurant&language=ja&key=${process.env.GOOGLE_MAP_API_KEY}`);
     const results = await Promise.all(axiosResponse.data.results.map(async (result) => getRestaurantInfo(result)));
