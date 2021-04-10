@@ -16,9 +16,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const sass = require('node-sass-middleware');
-// const multer = require('multer');
-
-// const upload = multer({ dest: path.join(__dirname, 'uploads') });
+const User = require('./models/User');
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
@@ -28,9 +26,7 @@ dotenv.config({ path: '.env' });
 /**
  * Controllers (route handlers).
  */
-// const homeController = require('./controllers/home');
 const userController = require('./controllers/user');
-const apiController = require('./controllers/api');
 const contactController = require('./controllers/contact');
 
 /**
@@ -85,14 +81,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-// app.use((req, res, next) => {
-//   if (req.path === '/api/upload') {
-//     // Multer multipart/form-data handling needs to occur before the Lusca CSRF check.
-//     next();
-//   } else {
-//     lusca.csrf()(req, res, next);
-//   }
-// });
+
 app.use(lusca.xframe('SAMEORIGIN'));
 app.use(lusca.xssProtection(true));
 app.disable('x-powered-by');
@@ -151,24 +140,18 @@ app.post('/account/password', passportConfig.isAuthenticated, userController.pos
 app.post('/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
 app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userController.getOauthUnlink);
 
-/**
- * API examples routes.
- */
-
-// app.get('/api/google-maps', apiController.getGoogleMaps);
-
-/**
- * OAuth authentication routes. (Sign in)
- */
-
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'], accessType: 'offline', prompt: 'consent' }));
-app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-  res.redirect(req.session.returnTo || '/');
+app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), async (req, res) => {
+  const loggedInUser = await User.findById(req.session.passport.user);
+  res.json({
+    data: {
+      id: loggedInUser._id,
+      email: loggedInUser.email,
+      name: loggedInUser.profile.name,
+      picture: loggedInUser.profile.picture,
+    }
+  });
 });
-
-/**
- * OAuth authorization routes. (API examples)
- */
 
 /**
  * Error Handler.
