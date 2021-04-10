@@ -1,9 +1,6 @@
-exports.convertUserResponse = (user) => {
-  if (!user) return [];
-  return {
-    id: user._id,
-    name: user.profile.name,
-    email: user.email,
-    picture: user.profile.picture
-  };
-};
+exports.convertUserResponse = (user) => ({
+  id: user._id,
+  name: user.profile.name,
+  email: user.email,
+  picture: user.profile.picture
+});

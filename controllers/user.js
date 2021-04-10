@@ -53,7 +53,7 @@ const sendMail = (settings) => {
 
 exports.getUsers = async (req, res) => {
   const users = await User.find();
-  res.json(users.map((user) => userAdapter.convertUserResponse(user)));
+  res.json({ data: !users || users.length === 0 ? [] : users.map((user) => userAdapter.convertUserResponse(user)) });
 };
 
 exports.getUserDetail = (req, res) => {
