@@ -3,6 +3,7 @@ const refresh = require('passport-oauth2-refresh');
 const { Strategy: LocalStrategy } = require('passport-local');
 const { OAuth2Strategy: GoogleStrategy } = require('passport-google-oauth');
 const moment = require('moment');
+const axios = require('axios');
 
 const User = require('../models/User');
 
@@ -69,7 +70,7 @@ const googleStrategyConfig = new GoogleStrategy({
         req.flash('errors', { msg: 'There is already a Google account that belongs to you. Sign in with that account or delete it, then link it with your current account.' });
         done(err);
       } else {
-        User.findById(req.user.id, (err, user) => {
+        User.findById(req.user.id, async (err, user) => {
           if (err) { return done(err); }
           user.google = profile.id;
           user.tokens.push({
@@ -80,7 +81,9 @@ const googleStrategyConfig = new GoogleStrategy({
           });
           user.profile.name = user.profile.name || profile.displayName;
           user.profile.gender = user.profile.gender || profile._json.gender;
-          user.profile.picture = user.profile.picture || profile._json.picture;
+          const picture = user.profile.picture || profile._json.picture;
+          const axiosResponse = await axios.get(picture);
+          user.profile.picture = Buffer.from(axiosResponse.data).toString('base64');
           user.save((err) => {
             req.flash('info', { msg: 'Google account has been linked.' });
             done(err, user);
@@ -94,7 +97,7 @@ const googleStrategyConfig = new GoogleStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile.emails[0].value }, (err, existingEmailUser) => {
+      User.findOne({ email: profile.emails[0].value }, async (err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with Google manually from Account Settings.' });
@@ -111,7 +114,8 @@ const googleStrategyConfig = new GoogleStrategy({
           });
           user.profile.name = profile.displayName;
           user.profile.gender = profile._json.gender;
-          user.profile.picture = profile._json.picture;
+          const axiosResponse = await axios.get(profile._json.picture);
+          user.profile.picture = Buffer.from(axiosResponse.data).toString('base64');
           user.save((err) => {
             done(err, user);
           });
