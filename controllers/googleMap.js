@@ -3,10 +3,15 @@ const axios = require('axios');
 const SEARCH_RADIUS = 50;
 
 const getRestaurantInfo = async (nearByInfo) => {
-  const { place_id: placeId, vicinity } = nearByInfo;
+  const { place_id: placeId, vicinity, geometry } = nearByInfo;
   const res = await axios.post(`https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,rating,formatted_phone_number&language=ja&key=${process.env.GOOGLE_MAP_API_KEY}`);
-  const { formatted_phone_number: formattedPhoneNumber, name, rating } = res.data.result;
+  const {
+    formatted_phone_number: formattedPhoneNumber, name, rating
+  } = res.data.result;
+  const { lat, lng } = geometry.location;
   return {
+    lat,
+    lon: lng,
     phone_number: formattedPhoneNumber,
     name,
     rating,
