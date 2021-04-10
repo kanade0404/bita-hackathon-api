@@ -50,6 +50,99 @@ const sendMail = (settings) => {
     });
 };
 
+exports.getUsers = (req, res) => {
+  res.json({
+    data: [{
+      id: '12345', email: 'user1@example.com', name: 'John Doe', picture: 'test.img'
+    }, {
+      id: '23456', email: 'user2@example.com', name: 'John Smith', picture: 'te2t.img'
+    }]
+  });
+};
+
+exports.getUserDetail = (req, res) => {
+  res.json({
+    data: {
+      id: '12345', email: 'user1@example.com', name: 'John Doe', picture: 'test.img'
+    }
+  });
+};
+
+exports.createStore = (req, res) => {
+  res.json({
+    data: {
+      id: '1',
+      name: 'restaurant'
+    }
+  });
+};
+exports.getStore = (req, res) => {
+  res.json({
+    data: [{
+      id: '1',
+      name: 'restaurant'
+    },
+    {
+      id: '2',
+      name: 'caffe'
+    }]
+  });
+};
+
+exports.getStoreDetail = (req, res) => {
+  res.json({
+    data: {
+      id: '1',
+      name: 'restaurant'
+    }
+  });
+};
+
+exports.createReview = (req, res) => {
+  res.json({
+    data: {
+      id: '1',
+      content: 'LGTM!',
+      store: {
+        id: '1',
+        name: 'restaurant'
+      },
+      user: {
+        id: '12345', email: 'user1@example.com', name: 'John Doe', picture: 'test.img'
+      }
+    }
+  });
+};
+
+exports.getReview = (req, res) => {
+  res.json({
+    data: [
+      {
+        id: '1',
+        content: 'LGTM!',
+        store: {
+          id: '1',
+          name: 'restaurant'
+        },
+        user: {
+          id: '12345', email: 'user1@example.com', name: 'John Doe', picture: 'test.img'
+        }
+      },
+      {
+        id: '2',
+        content: 'ここはいいぞ',
+        store: {
+          id: '1',
+          name: 'restaurant'
+        },
+        user: {
+          id: '23456', email: 'user2@example.com', name: 'John Smith', picture: 'te2t.img'
+        }
+      }
+    ]
+  });
+};
+
 /**
  * GET /login
  * Login page.
