@@ -7,6 +7,7 @@ const _ = require('lodash');
 const validator = require('validator');
 const mailChecker = require('mailchecker');
 const User = require('../models/User');
+const userAdapter = require('../adapter/user');
 
 const randomBytesAsync = promisify(crypto.randomBytes);
 
@@ -50,14 +51,9 @@ const sendMail = (settings) => {
     });
 };
 
-exports.getUsers = (req, res) => {
-  res.json({
-    data: [{
-      id: '12345', email: 'user1@example.com', name: 'John Doe', picture: 'test.img'
-    }, {
-      id: '23456', email: 'user2@example.com', name: 'John Smith', picture: 'te2t.img'
-    }]
-  });
+exports.getUsers = async (req, res) => {
+  const users = await User.find();
+  res.json(users.map((user) => userAdapter.convertUserResponse(user)));
 };
 
 exports.getUserDetail = (req, res) => {
