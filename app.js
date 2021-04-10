@@ -17,6 +17,7 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const sass = require('node-sass-middleware');
 const User = require('./models/User');
+const cors = require('cors')
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
@@ -110,6 +111,7 @@ app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/popper.js/d
 app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js'), { maxAge: 31557600000 }));
 app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/jquery/dist'), { maxAge: 31557600000 }));
 app.use('/webfonts', express.static(path.join(__dirname, 'node_modules/@fortawesome/fontawesome-free/webfonts'), { maxAge: 31557600000 }));
+app.use(cors())
 
 app.get('/api/user', userController.getUsers);
 app.get('/api/user/:id', userController.getUserDetail);
