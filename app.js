@@ -28,6 +28,7 @@ dotenv.config({ path: '.env' });
  */
 const userController = require('./controllers/user');
 const contactController = require('./controllers/contact');
+const googleMapController = require('./controllers/googleMap');
 
 /**
  * API keys and Passport configuration.
@@ -117,6 +118,7 @@ app.get('/api/store', userController.getStore);
 app.get('/api/store/:id', userController.getStoreDetail);
 app.post('/api/review', userController.createReview);
 app.get('/api/review', userController.getReview);
+app.post('/api/nearby', googleMapController.getNearbyRestaurant);
 /**
  * Primary app routes.
  */
