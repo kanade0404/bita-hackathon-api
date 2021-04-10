@@ -72,7 +72,9 @@ exports.createStore = (req, res) => {
   res.json({
     data: {
       id: '1',
-      name: 'restaurant'
+      name: 'restaurant',
+      lat: 36.204823999999995,
+      lon: 138.252924
     }
   });
 };
@@ -80,11 +82,15 @@ exports.getStore = (req, res) => {
   res.json({
     data: [{
       id: '1',
-      name: 'restaurant'
+      name: 'restaurant',
+      lat: 36.204823999999995,
+      lon: 138.252924
     },
     {
       id: '2',
-      name: 'caffe'
+      name: 'caffe',
+      lat: 36.204823999999995,
+      lon: 138.252924
     }]
   });
 };
@@ -105,7 +111,9 @@ exports.createReview = (req, res) => {
       content: 'LGTM!',
       store: {
         id: '1',
-        name: 'restaurant'
+        name: 'restaurant',
+        lat: 36.204823999999995,
+        lon: 138.252924
       },
       user: {
         id: '12345', email: 'user1@example.com', name: 'John Doe', picture: 'test.img'
@@ -122,7 +130,9 @@ exports.getReview = (req, res) => {
         content: 'LGTM!',
         store: {
           id: '1',
-          name: 'restaurant'
+          name: 'restaurant',
+          lat: 36.204823999999995,
+          lon: 138.252924
         },
         user: {
           id: '12345', email: 'user1@example.com', name: 'John Doe', picture: 'test.img'
@@ -133,7 +143,9 @@ exports.getReview = (req, res) => {
         content: 'ここはいいぞ',
         store: {
           id: '1',
-          name: 'restaurant'
+          name: 'restaurant',
+          lat: 36.204823999999995,
+          lon: 138.252924
         },
         user: {
           id: '23456', email: 'user2@example.com', name: 'John Smith', picture: 'te2t.img'
