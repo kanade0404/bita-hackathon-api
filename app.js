@@ -119,10 +119,9 @@ app.get('/api/nearby', googleMapController.getNearbyRestaurant);
 /**
  * Primary app routes.
  */
-// app.get('/', homeController.index);
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
-app.get('/logout', userController.logout);
+app.post('/logout', userController.logout);
 app.get('/forgot', userController.getForgot);
 app.post('/forgot', userController.postForgot);
 app.get('/reset/:token', userController.getReset);
@@ -142,7 +141,12 @@ app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userControl
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'], accessType: 'offline', prompt: 'consent' }));
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), async (req, res) => {
   const loggedInUser = await User.findById(req.session.passport.user);
-  res.redirect(`${process.env.CLIENT_URL}?userId=${loggedInUser._id}&token=${loggedInUser.tokens[0].accessToken}`);
+  try {
+    res.redirect(`${process.env.CLIENT_URL}?userId=${loggedInUser._id}&token=${loggedInUser.tokens[0].accessToken}`);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error });
+  }
 });
 
 /**
