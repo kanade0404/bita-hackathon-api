@@ -57,10 +57,8 @@ exports.getStoreDetail = async (req, res) => {
 
 exports.createReview = async (req, res) => {
   const { content, userId, storeId } = req.body;
-  console.log(content, userId, storeId);
   const user = await User.findById(userId);
   const store = await Store.findById(storeId);
-  console.log(user, store);
   if (!(user && store)) {
     res.status(400).json({ message: `Not found user or store id: ${userId}, store id: ${storeId}` });
   } else {
@@ -76,9 +74,12 @@ exports.createReview = async (req, res) => {
 };
 
 exports.getReview = async (req, res) => {
-  const reviews = await Review.find({ storeId: req.body.storeId });
+  const cond = {};
+  if (req.query.storeId) { cond.storeId = req.query.storeId; }
+  if (req.query.userId) { cond.userId = req.query.userId; }
+  const reviews = await Review.find(cond);
   res.json({
-    data: !reviews || reviews.length === 0 ? [] : Promise.all(reviews.map(async (review) => {
+    data: !reviews || reviews.length === 0 ? [] : await Promise.all(reviews.map(async (review) => {
       const store = await Store.findById(review.storeId);
       const user = await User.findById(review.userId);
       return {
