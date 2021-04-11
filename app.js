@@ -26,7 +26,6 @@ dotenv.config({ path: '.env' });
  * Controllers (route handlers).
  */
 const userController = require('./controllers/user');
-// const contactController = require('./controllers/contact');
 const googleMapController = require('./controllers/googleMap');
 
 /**
