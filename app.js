@@ -105,8 +105,8 @@ app.post('/api/store', userController.createStore);
 app.get('/api/store', userController.getStore);
 app.get('/api/store/:id', userController.getStoreDetail);
 app.post('/api/review', userController.createReview);
-app.get('/api/review', userController.getReview);
 app.get('/api/nearby', googleMapController.getNearbyRestaurant);
+app.get('/api/review', userController.getReview);
 app.post('/api/review', userController.createReview);
 /**
  * Primary app routes.

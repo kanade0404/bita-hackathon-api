@@ -33,10 +33,10 @@ exports.createStore = async (req, res) => {
   try {
     const existStore = await Store.findOne({ name, latitude, longitude });
     if (existStore) {
-      res.json({ data: existStore });
+      res.json({ data: storeAdapter.convertStore(existStore) });
     } else {
       const store = await Store.create({ name, latitude, longitude });
-      res.json({ data: store });
+      res.json({ data: storeAdapter.convertStore(store) });
     }
   } catch (error) {
     res.status(400).json(error);
@@ -66,8 +66,8 @@ exports.createReview = async (req, res) => {
     res.json({
       id: review._id,
       content: review.content,
-      user,
-      store
+      user: userAdapter.convertUserResponse(user),
+      store: storeAdapter.convertStore(store)
     });
   }
 };
@@ -75,7 +75,7 @@ exports.createReview = async (req, res) => {
 exports.getReview = async (req, res) => {
   const reviews = await Review.find({ storeId: req.body.storeId });
   res.json({
-    data: Promise.all(reviews.map(async (review) => {
+    data: !reviews || reviews.length === 0 ? [] : Promise.all(reviews.map(async (review) => {
       const store = await Store.findById(review.storeId);
       const user = await User.findById(review.userId);
       return {
