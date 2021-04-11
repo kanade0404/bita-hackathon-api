@@ -12,9 +12,21 @@ exports.getUserDetail = async (req, res) => {
   res.json({ data: await User.findById(req.params.id) });
 };
 
-exports.getMe = async (req, res) => {
-  res.json({ data: userAdapter.convertUserResponse(await User.findById(req.session.user.id)) });
+exports.updateUser = (req, res) => {
+  const {
+    id, name, picture, description, tags
+  } = req.body;
+  User.findById(id, async (err, user) => {
+    if (err) { return res.status(404); }
+    if (name) { user.profile.name = name; }
+    if (picture) { user.profile.picture = picture; }
+    if (description) { user.description = description; }
+    if (tags && tags.length > 0) { user.tags = tags; }
+    user.save();
+    res.json({ data: userAdapter.convertUserResponse(user) });
+  });
 };
+
 exports.createStore = async (req, res) => {
   const { name, latitude, longitude } = req.body;
   try {
@@ -103,7 +115,8 @@ exports.logout = (req, res) => {
     if (err) console.log('Error : Failed to destroy the session during logout.', err);
     req.user = null;
     req.session.user = null;
+    res.cookie('connect.sid', '');
+    res.cookie('userId', '');
+    res.redirect(`${process.env.CLIENT_URL}/login`);
   });
-  res.cookie('connect.sid', '');
-  res.redirect(`${process.env.CLIENT_URL}/login`);
 };

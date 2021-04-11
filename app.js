@@ -16,7 +16,6 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const cors = require('cors');
 const User = require('./models/User');
-const userAdapter = require('./adapter/user');
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
@@ -100,7 +99,7 @@ app.use((req, res, next) => {
 app.use(cors());
 
 app.get('/api/user', userController.getUsers);
-app.get('/api/me', userController.getMe);
+app.post('/api/user', userController.updateUser);
 app.get('/api/user/:id', userController.getUserDetail);
 app.post('/api/store', userController.createStore);
 app.get('/api/store', userController.getStore);
@@ -117,7 +116,7 @@ app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'em
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), async (req, res) => {
   const loggedInUser = await User.findById(req.session.passport.user);
   try {
-    req.session.user = userAdapter.convertUserResponse(loggedInUser);
+    res.cookie('userId', loggedInUser.id);
     res.redirect(`${process.env.CLIENT_URL}?userId=${loggedInUser._id}&token=${loggedInUser.tokens[0].accessToken}`);
   } catch (error) {
     console.error(error);
