@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema({
-  userId: Number,
-  storeId: Number,
+  userId: String,
+  storeId: String,
   content: String
 }, { timestamps: true });
 

@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Store = require('../models/Store');
+const Review = require('../models/Review');
 const userAdapter = require('../adapter/user');
 const storeAdapter = require('../adapter/store');
 
@@ -54,54 +55,35 @@ exports.getStoreDetail = async (req, res) => {
   });
 };
 
-exports.createReview = (req, res) => {
-  res.json({
-    data: {
-      id: '1',
-      content: 'LGTM!',
-      store: {
-        id: '1',
-        name: 'restaurant',
-        latitude: 36.204823999999995,
-        longitude: 138.252924
-      },
-      user: {
-        id: '12345', email: 'user1@example.com', name: 'John Doe', picture: 'test.img'
-      }
-    }
-  });
+exports.createReview = async (req, res) => {
+  const { content, userId, storeId } = req.body;
+  const user = await User.findById(userId);
+  const store = await Store.findById(storeId);
+  if (!(user && store)) {
+    res.status(400).json({ message: `Not found user or store.user id: ${userId}, store id: ${storeId}` });
+  } else {
+    const review = await Review.create({ content, storeId, userId });
+    res.json({
+      id: review._id,
+      content: review.content,
+      user,
+      store
+    });
+  }
 };
 
-exports.getReview = (req, res) => {
+exports.getReview = async (req, res) => {
+  const reviews = await Review.find({ storeId: req.body.storeId });
   res.json({
-    data: [
-      {
-        id: '1',
-        content: 'LGTM!',
-        store: {
-          id: '1',
-          name: 'restaurant',
-          latitude: 36.204823999999995,
-          longitude: 138.252924
-        },
-        user: {
-          id: '12345', email: 'user1@example.com', name: 'John Doe', picture: 'test.img'
-        }
-      },
-      {
-        id: '2',
-        content: 'ここはいいぞ',
-        store: {
-          id: '1',
-          name: 'restaurant',
-          latitude: 36.204823999999995,
-          longitude: 138.252924
-        },
-        user: {
-          id: '23456', email: 'user2@example.com', name: 'John Smith', picture: 'te2t.img'
-        }
-      }
-    ]
+    data: Promise.all(reviews.map(async (review) => {
+      const store = await Store.findById(review.storeId);
+      const user = await User.findById(review.userId);
+      return {
+        content: review.content,
+        store: storeAdapter.convertStore(store),
+        user: userAdapter.convertUserResponse(user)
+      };
+    }))
   });
 };
 
@@ -114,7 +96,7 @@ exports.logout = (req, res) => {
   req.session.destroy((err) => {
     if (err) console.log('Error : Failed to destroy the session during logout.', err);
     req.user = null;
-    req.session.user = null;
+    if (req.session.user) { req.session.user = null; }
     res.cookie('connect.sid', '');
     res.cookie('userId', '');
     res.redirect(`${process.env.CLIENT_URL}/login`);
