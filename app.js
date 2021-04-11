@@ -109,7 +109,7 @@ app.get('/api/nearby', googleMapController.getNearbyRestaurant);
 /**
  * Primary app routes.
  */
-app.post('/logout', userController.logout);
+app.get('/logout', userController.logout);
 
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'], accessType: 'offline', prompt: 'consent' }));
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), async (req, res) => {
