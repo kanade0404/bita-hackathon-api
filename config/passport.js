@@ -60,14 +60,13 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, (email, password, don
 const googleStrategyConfig = new GoogleStrategy({
   clientID: process.env.GOOGLE_ID,
   clientSecret: process.env.GOOGLE_SECRET,
-  callbackURL: '/auth/google/callback',
+  callbackURL: `${process.env.BASE_URL}/auth/google/callback`,
   passReqToCallback: true
 }, (req, accessToken, refreshToken, params, profile, done) => {
   if (req.user) {
     User.findOne({ google: profile.id }, (err, existingUser) => {
       if (err) { return done(err); }
       if (existingUser && (existingUser.id !== req.user.id)) {
-        req.flash('errors', { msg: 'There is already a Google account that belongs to you. Sign in with that account or delete it, then link it with your current account.' });
         done(err);
       } else {
         User.findById(req.user.id, async (err, user) => {
@@ -85,7 +84,6 @@ const googleStrategyConfig = new GoogleStrategy({
           const axiosResponse = await axios.get(picture);
           user.profile.picture = Buffer.from(axiosResponse.data).toString('base64');
           user.save((err) => {
-            req.flash('info', { msg: 'Google account has been linked.' });
             done(err, user);
           });
         });
@@ -100,7 +98,6 @@ const googleStrategyConfig = new GoogleStrategy({
       User.findOne({ email: profile.emails[0].value }, async (err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
-          req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with Google manually from Account Settings.' });
           done(err);
         } else {
           const user = new User();

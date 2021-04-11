@@ -12,11 +12,25 @@
     "Yashar Fakhari (https://github.com/YasharF)"
   ],
   "scripts": {
-    "postinstall": "npm rebuild node-sass",
     "start": "node app.js",
     "test": "nyc mocha --timeout=10000 --exit",
     "lint": "eslint \"**/*.js\"",
-    "fix": "eslint \"**/*.js\" --fix"
+    "fix": "eslint \"**/*.js\" --fix",
+    "project": "gcloud config set project hackathon-starter-305913",
+    "gcloud:prod": "run-s gcloud:prod:decrypt gcloud:prod:deploy",
+    "gcloud:prod:deploy": "gcloud app deploy",
+    "gcloud:dev:decrypt": "run-p gcloud:dev:decrypt:*",
+    "gcloud:dev:decrypt:env": "gcloud kms decrypt --location asia-northeast1 --keyring api --key api-dev --ciphertext-file .env.dev.encrypted --plaintext-file .env",
+    "gcloud:dev:decrypt:credential": "gcloud kms decrypt --location asia-northeast1 --keyring api --key api-dev --ciphertext-file ./credential/credential.json.encrypted --plaintext-file ./credential/credential.json",
+    "gcloud:dev:encrypt": "run-p gcloud:dev:encrypt:*",
+    "gcloud:dev:encrypt:env": "gcloud kms encrypt --location asia-northeast1 --keyring api --key api-dev --ciphertext-file .env.dev.encrypted --plaintext-file .env",
+    "gcloud:dev:encrypt:credential": "gcloud kms encrypt --location asia-northeast1 --keyring api --key api-dev --ciphertext-file ./credential/credential.json.encrypted --plaintext-file ./credential/credential.json",
+    "gcloud:prod:decrypt": "run-p gcloud:prod:decrypt:*",
+    "gcloud:prod:decrypt:env": "gcloud kms decrypt --location asia-northeast1 --keyring api --key api-dev --ciphertext-file .env.prod.encrypted --plaintext-file .env",
+    "gcloud:prod:decrypt:credential": "gcloud kms decrypt --location asia-northeast1 --keyring api --key api-dev --ciphertext-file ./credential/credential.json.encrypted --plaintext-file ./credential/credential.json",
+    "gcloud:prod:encrypt": "run-p gcloud:prod:encrypt:*",
+    "gcloud:prod:encrypt:env": "gcloud kms encrypt --location asia-northeast1 --keyring api --key api-dev --ciphertext-file .env.prod.encrypted --plaintext-file .env",
+    "gcloud:prod:encrypt:credential": "gcloud kms encrypt --location asia-northeast1 --keyring api --key api-dev --ciphertext-file ./credential/credential.json.encrypted --plaintext-file ./credential/credential.json"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
@@ -53,6 +67,7 @@
     "node-quickbooks": "^2.0.37",
     "nodemailer": "^6.4.17",
     "nodemailer-sendgrid": "^1.0.3",
+    "npm-run-all": "^4.1.5",
     "passport": "^0.4.1",
     "passport-facebook": "^3.0.0",
     "passport-github2": "^0.1.12",
