@@ -57,17 +57,20 @@ exports.getStoreDetail = async (req, res) => {
 
 exports.createReview = async (req, res) => {
   const { content, userId, storeId } = req.body;
+  console.log(content, userId, storeId);
   const user = await User.findById(userId);
   const store = await Store.findById(storeId);
+  console.log(user, store);
   if (!(user && store)) {
-    res.status(400).json({ message: `Not found user or store.user id: ${userId}, store id: ${storeId}` });
+    res.status(400).json({ message: `Not found user or store id: ${userId}, store id: ${storeId}` });
   } else {
     const review = await Review.create({ content, storeId, userId });
     res.json({
       id: review._id,
       content: review.content,
       user: userAdapter.convertUserResponse(user),
-      store: storeAdapter.convertStore(store)
+      store: storeAdapter.convertStore(store),
+      updatedAt: review.updatedAt
     });
   }
 };
