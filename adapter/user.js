@@ -3,5 +3,6 @@ exports.convertUserResponse = (user) => ({
   name: user.profile.name,
   email: user.email,
   picture: user.profile.picture,
-  tags: user.tags
+  tags: user.tags,
+  description: user.description,
 });
